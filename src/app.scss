@@ -1,0 +1,31 @@
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Open Sans', sans-serif;
+  color: #222;
+}
+
+body {
+
+  &.no-overflow {
+    overflow: hidden;
+  }
+}
+
+* {
+    box-sizing: border-box;
+    &:before,
+    &:after {
+        box-sizing: border-box;
+    }
+}
+
+@import 'styles/fonts';
+@import 'styles/mixin';
+@import 'styles/loading';
+@import 'styles/header';
