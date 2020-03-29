@@ -1,20 +1,23 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {renameListItemAction, editModeAction} from '../actions/actions';
+import {renameListItemAction, renameTodoItemAction, editModeAction, editModeTodoAction} from '../actions/actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 
 const mapStateToProps = state => {
 
   return {
-    todosList: state.todosList
+    todosList: state.todosList,
+    todosView: state.todosView
   };
 };
 
 function mapDispatchToProps(dispatch) {
   return {
     renameListItem: (itemId, value) => dispatch(renameListItemAction(itemId, value)),
-    editMode: itemId => dispatch(editModeAction(itemId))
+    renameTodoItem: (itemId, value) => dispatch(renameTodoItemAction(itemId, value)),
+    editMode: itemId => dispatch(editModeAction(itemId)),
+    editModeTodo: itemId => dispatch(editModeTodoAction(itemId))
   };
 }
 
@@ -34,13 +37,19 @@ class RenameItemInput extends Component {
     this.handleKeyPress = this.handleKeyPress.bind(this);
   }
 
+  componentDidMount(prevProps, prevStates) {
+    document.getElementById('edit-list-item-input').focus();
+  }
+
   handleCancel() {
-    this.props.editMode(this.props.item._id);
+    !this.props.todosView ? this.props.editMode(this.props.item._id) : this.props.editModeTodo(this.props.item._id);
   }
 
   handleSubmit() {
     if (!this.state.enableSubmit) return;
-    this.props.renameListItem(this.props.item._id, this.state.itemValue);
+    !this.props.todosView
+      ? this.props.renameListItem(this.props.item._id, this.state.itemValue)
+      : this.props.renameTodoItem(this.props.item._id, this.state.itemValue);
   }
 
   handleInputChange(evt) {
@@ -56,12 +65,13 @@ class RenameItemInput extends Component {
 
   handleKeyPress(evt) {
     evt.keyCode === 13 && this.handleSubmit();
+    evt.keyCode === 27 && this.handleCancel();
   }
 
   render() {
     return (
       <>
-        <input type="text" value={this.state.itemValue} onChange={this.handleInputChange} />
+        <input id="edit-list-item-input" type="text" value={this.state.itemValue} onChange={this.handleInputChange} onKeyUp={this.handleKeyPress} />
         <button onClick={this.handleSubmit} disabled={!this.state.enableSubmit}>
           <FontAwesomeIcon icon={faCheck} />
         </button>

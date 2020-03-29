@@ -1,0 +1,329 @@
+.list-wrap {
+  position: relative;
+  padding: 80px 15px 50px 15px;
+  height: 100vh;
+
+  &.todos {
+    padding-top: 130px;
+
+    select {
+      position: absolute;
+      top: 135px;
+      right: 15px;
+      z-index: 3;
+
+      @media (max-width: $breakpoint-mobile) {
+        top: 130px;
+      }
+    }
+  }
+
+  ul {
+    display: block;
+    list-style-type: none;
+    margin: 0;
+    padding: 60px 0 0 0;
+    max-height: 100%;
+    overflow-y: auto;
+    position: relative;
+    z-index: 1;
+
+    @media (max-width: $breakpoint-mobile) {
+      padding-top: 40px;
+    }
+
+    li {
+      display: block;
+      position: relative;
+      width: 100%;
+      margin-bottom: 5px;
+      line-height: 22px;
+      z-index: 1;
+
+      // Add new list item
+      &:last-child {
+        margin-bottom: 0;
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        left: 0;
+
+        button {
+          padding: 0;
+          margin: 0;
+
+          svg {
+            color: $color3;
+            margin: 5px 0;
+
+            @media (max-width: $breakpoint-mobile) {
+              margin: 0;
+            }
+          }
+
+          span {
+            display: inline-block;
+            vertical-align: top;
+            margin-left: 5px;
+            line-height: 22px;
+            padding: 5px 0;
+
+            @media (max-width: $breakpoint-mobile) {
+              padding: 0;
+            }
+          }
+        }
+      }
+
+      &.new-list-item,
+      &.edit-list-item {
+        background-color: $color1;
+        border-radius: 8px;
+        border: 1px solid rgba($color3, 0.4);
+        overflow: hidden;
+
+        button {
+          padding: 0;
+          margin: 0;
+          width: 35px;
+          text-align: center;
+          background-color: $color3;
+
+          @media (max-width: $breakpoint-mobile) {
+            display: inline-block;
+            vertical-align: top;
+          }
+
+          &:disabled {
+            opacity: 0.7;
+          }
+
+          svg {
+            color: $color1;
+            margin: 8px 0;
+
+            @media (max-width: $breakpoint-mobile) {
+              margin: 0;
+            }
+          }
+
+          &:last-of-type {
+            border-radius: 0 5px 5px 0;
+            background-color: $color4;
+          }
+        }
+
+        input {
+          outline: none;
+          border: 1px solid $color2;
+          width: calc(100% - 70px);
+          padding: 10px 15px;
+          line-height: 16px;
+          border-radius: 5px 0 0 5px;
+          background-color: rgba($color2, 0.6);
+          color: $color4;
+          font-weight: bold;
+
+          &::placeholder {
+            color: $color3;
+            font-weight: 500;
+          }
+
+          @media (max-width: $breakpoint-mobile) {
+            padding: 3px 15px;
+            line-height: 14px;
+            border-radius: 3px 0 0 3px;
+            display: inline-block;
+            vertical-align: top;
+          }
+        }
+      }
+
+      &:hover {
+
+        .btn-wrap {
+          @include transform(translateY(0));
+          opacity: 1;
+        }
+
+        span:not(.item-date) {
+          text-decoration: underline;
+        }
+      }
+
+      svg {
+        color: $color3;
+        font-size: 10px;
+        display: inline-block;
+        height: 22px;
+        margin: 5px 5px 5px 0;
+
+        @media (max-width: $breakpoint-mobile) {
+          margin: 0px 5px 0 0;
+        }
+      }
+
+      .span-wrap {
+        display: inline-block;
+        vertical-align: top;
+        max-width: calc(100% - 82px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-right: 5px;
+        line-height: 22px;
+        padding: 5px 0;
+
+        @media (max-width: $breakpoint-mobile) {
+          padding: 0;
+        }
+      }
+
+      .item-name {
+        font-weight: 700;
+        padding-right: 10px;
+        cursor: pointer;
+        vertical-align: top;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .item-date {
+        display: inline-block;
+        cursor: pointer;
+        vertical-align: top;
+        font-weight: 500;
+        font-size: 10px;
+
+        @media (max-width: $breakpoint-mobile) {
+          display: none;
+        }
+      }
+
+      .btn-wrap {
+        display: inline-block;
+        vertical-align: top;
+        line-height: 22px;
+        @include transform(translateY(100%));
+        @include transition(200ms transform ease-out, 200ms opacity ease-out 100ms);
+        background-color: transparent;
+        opacity: 0;
+
+        svg {
+          font-size: 14px;
+        }
+
+        button {
+          padding: 0 2px;
+        }
+
+        @media (max-width: $breakpoint-mobile) {
+          @include transform(translateY(0%));
+          opacity: 1;
+          position: absolute;
+          right: 0;
+          top: 0;
+        }
+      }
+
+      .item-wrap {
+        display: inline-block;
+        vertical-align: top;
+        overflow: hidden;
+        width: 100%;
+
+        @media (max-width: $breakpoint-mobile) {
+          width: 100%;
+        }
+      }
+
+      button {
+        display: inline-block;
+        outline: none;
+        border: none;
+        background-color: transparent;
+        margin-right: 5px;
+        padding: 0 5px;
+        line-height: 22px;
+        vertical-align: top;
+        color: $color3;
+        cursor: pointer;
+
+        svg {
+          font-size: 18px;
+          display: inline-block;
+          vertical-align: top;
+
+          @media (max-width: $breakpoint-mobile) {
+            font-size: 14px;
+          }
+        }
+
+        &:not(.checkbox):last-of-type {
+          margin-right: 0;
+        }
+
+        span {
+          font-family: 'Open Sans', sans-serif;
+          font-size: 14px;
+          font-weight: 700;
+          color: $color4;
+        }
+      }
+
+      .checkbox {
+        vertical-align: top;
+        color: #5167EB;
+        cursor: pointer;
+        border-radius: 50%;
+        background-color: $color1;
+        border: 1px solid $color3;
+        width: 22px;
+        height: 22px;
+        padding: 0;
+        margin: 5px 5px 5px 0;
+        overflow: hidden;
+        text-align: center;
+
+        @media (max-width: $breakpoint-mobile) {
+          margin: 2px 5px 0 0;
+          width: 18px;
+          height: 18px;
+        }
+
+        &.completed {
+          background-color: $color3;
+
+          svg {
+            display: inline-block;
+          }
+        }
+
+        &:not(.completed):hover {
+          background-color: $color1;
+
+          svg {
+            display: inline-block;
+            color: $color3;
+          }
+        }
+
+        svg {
+          color: $color1;
+          margin: 0;
+          display: none;
+          height: 20px;
+          line-height: 20px;
+          font-size: 12px;
+
+          @media (max-width: $breakpoint-mobile) {
+            height: 16px;
+            line-height: 16px;
+            font-size: 10px;
+          }
+        }
+      }
+    }
+  }
+}

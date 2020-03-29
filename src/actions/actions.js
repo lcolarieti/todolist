@@ -4,9 +4,6 @@ import {config} from '../config/config';
  * action types
  */
 
-export const ADD_TODO = 'ADD_TODO'
-export const TOGGLE_TODO = 'TOGGLE_TODO'
-export const SET_VISIBILITY_FILTER = 'SET_VISIBILITY_FILTER'
 export const GETLIST_REQUESTED = 'GETLIST_REQUESTED';
 export const GETLIST_RECEIVED = 'GETLIST_RECEIVED';
 export const GETLIST_FAILED = 'GETLIST_FAILED';
@@ -15,36 +12,21 @@ export const SETLIST_ITEM_RECEIVED = 'SETLIST_ITEM_RECEIVED';
 export const RMVLIST_ITEM_RECEIVED = 'RMVLIST_ITEM_RECEIVED';
 export const EDIT_MODE = 'EDIT_MODE';
 export const EDITLIST_ITEM_RECEIVED = 'EDITLIST_ITEM_RECEIVED';
-
-/*
- * other constants
- */
-
-export const VisibilityFilters = {
-  SHOW_ALL: 'SHOW_ALL',
-  SHOW_COMPLETED: 'SHOW_COMPLETED',
-  SHOW_ACTIVE: 'SHOW_ACTIVE'
-}
+export const SET_TODO_LIST = 'SET_TODO_LIST';
+export const GOTO_ROOT = 'GOTO_ROOT';
+export const SETTODO_ITEM_RECEIVED = 'SETTODO_ITEM_RECEIVED';
+export const EDIT_MODE_TODO = 'EDIT_MODE_TODO';
+export const EDITTODO_ITEM_RECEIVED = 'EDITTODO_ITEM_RECEIVED';
+export const RMVTODO_ITEM_RECEIVED = 'RMVTODO_ITEM_RECEIVED';
+export const TOGGLE_COMPLETED = 'TOGGLE_COMPLETED';
+export const SHOW_ALL = 'SHOW_ALL';
+export const SHOW_COMPLETED = 'SHOW_COMPLETED';
+export const SHOW_UNCOMPLETED = 'SHOW_UNCOMPLETED';
+export const FILTER_CHANGED = 'FILTER_CHANGED';
 
 /*
  * action creators
  */
-
-export function addTodo(todo) {
-  return { type: ADD_TODO, todo }
-}
-
-export function toggleTodo(id) {
-  return { type: TOGGLE_TODO, id }
-}
-
-export function setVisibilityFilter(filter) {
-  return { type: SET_VISIBILITY_FILTER, filter }
-}
-
-export function setFetching(fetching) {
-  return { type: SET_FETCHING, fetching: fetching }
-}
 
 export function getListAction() {
   return (dispatch) => {
@@ -87,6 +69,30 @@ export function setNewListItemAction(itemName) {
   }
 }
 
+export function setNewTodoItemAction(listId, todoName) {
+  return (dispatch) => {
+    dispatch({type: SET_FETCHING, fetching: true});
+
+    fetch(`${config.api}/list/${listId}`,
+      {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: todoName.trim()})
+      })
+      .then(res => res.json())
+      .then((response) => {
+        dispatch({type: SETTODO_ITEM_RECEIVED, newItem: response});
+        dispatch({type: SET_FETCHING, fetching: false});
+      })
+      .catch(err => {
+        dispatch({type: SET_FETCHING, fetching: false});
+      });
+  }
+}
+
 export function removeListItemAction(itemId) {
   return (dispatch, getState) => {
     dispatch({type: SET_FETCHING, fetching: true});
@@ -106,8 +112,31 @@ export function removeListItemAction(itemId) {
   }
 }
 
+export function removeTodoItemAction(itemId) {
+  return (dispatch, getState) => {
+    dispatch({type: SET_FETCHING, fetching: true});
+
+    fetch(`${config.api}/list/${getState().todosListId}/${itemId}`,
+      {
+        method: 'DELETE'
+      })
+      .then(res => res.json())
+      .then((response) => {
+        dispatch({type: RMVTODO_ITEM_RECEIVED, todosListItem: response});
+        dispatch({type: SET_FETCHING, fetching: false});
+      })
+      .catch(err => {
+        dispatch({type: SET_FETCHING, fetching: false});
+      });
+  }
+}
+
 export function editModeAction(itemId) {
   return { type: EDIT_MODE, itemId: itemId }
+};
+
+export function editModeTodoAction(itemId) {
+  return { type: EDIT_MODE_TODO, itemId: itemId }
 };
 
 export function renameListItemAction(itemId, itemValue) {
@@ -132,4 +161,68 @@ export function renameListItemAction(itemId, itemValue) {
         dispatch({type: SET_FETCHING, fetching: false});
       });
   }
+};
+
+export function renameTodoItemAction(itemId, itemValue) {
+  return (dispatch, getState) => {
+    dispatch({type: SET_FETCHING, fetching: true});
+
+    fetch(`${config.api}/list/${getState().todosListId}/${itemId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: itemValue.trim()})
+      })
+      .then(res => res.json())
+      .then((response) => {
+        dispatch({type: EDITTODO_ITEM_RECEIVED, editedItem: response});
+        dispatch({type: SET_FETCHING, fetching: false});
+      })
+      .catch(err => {
+        dispatch({type: SET_FETCHING, fetching: false});
+      });
+  }
+};
+
+export function setTodoListAction(itemId) {
+  return (dispatch) => {
+    dispatch({type: SET_TODO_LIST, todosListId: itemId});
+  };
+};
+
+export function goToRootAction() {
+  return (dispatch) => {
+    dispatch({type: GOTO_ROOT})
+  }
+};
+
+export function toggleCompletedAction(item) {
+  return (dispatch, getState) => {
+    dispatch({type: SET_FETCHING, fetching: true});
+
+    fetch(`${config.api}/list/${getState().todosListId}/${item._id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({completed: item.completed})
+      })
+      .then(res => res.json())
+      .then((response) => {
+        dispatch({type: TOGGLE_COMPLETED, editedItem: response});
+        dispatch({type: SET_FETCHING, fetching: false});
+      })
+      .catch(err => {
+        dispatch({type: SET_FETCHING, fetching: false});
+      });
+  }
+};
+
+export function filterChangedAction(filter) {
+  return {type: FILTER_CHANGED, filter: filter};
 };

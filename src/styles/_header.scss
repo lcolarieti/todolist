@@ -3,10 +3,14 @@ header {
   top: 0;
   left: 0;
   width: 100%;
-  padding: 15px 30px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 4px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px 15px;
   z-index: 9;
-  background-color: #fff;
+  background-color: $color1;
+  box-shadow: 0 6px 12px rgba($color4, 0.15), 0 4px 4px rgba($color3, 0.1);
+
+  &.shadow {
+    box-shadow: 0 2px 8px rgba($color4, 0.15), 0 2px 2px rgba($color3, 0.1);
+  }
 
   .wrap {
     max-width: 1240px;
@@ -15,47 +19,96 @@ header {
     align-items: center;
   }
 
-  .left,
-  .right {
-      max-width: 50%;
+  .logo {
+    display: inline-block;
+    vertical-align: top;
+    width: 30px;
+    height: 30px;
+    overflow: hidden;
 
-      &.right {
-        margin-left: auto;
+    svg {
+      color: $color3;
+      font-size: 30px;
+      display: block;
+      width: 100%;
+    }
+  }
 
-        .user {
+  h1 {
+    display: inline-block;
+    vertical-align: top;
+    line-height: 30px;
+    font-size: 22px;
+    margin: 0;
+    padding: 0 0 0 15px;
+
+    span {
+      font-weight: 500;
+      color: $color3;
+      display: inline-block;
+      vertical-align: top;
+      line-height: 14px;
+      font-size: 14px;
+      font-style: italic;
+      padding-top: 12px;
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+      font-size: 20px;
+
+      span {
+        display: none;
+      }
+    }
+  }
+}
+
+.breadcrumbs {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  width: 100%;
+  z-index: 8;
+  background-color: $color1;
+  @include transition(400ms transform ease-in-out);
+  @include transform(translateY(0));
+  padding: 5px 15px;
+  box-shadow: 0 6px 12px rgba($color4, 0.15), 0 4px 4px rgba($color3, 0.1);
+
+  &:empty {
+    @include transition(400ms transform ease-in-out);
+    @include transform(translateY(-100%));
+    box-shadow: none;
+  }
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      display: inline-block;
+      line-height: 30px;
+      vertical-align: top;
+      color: $color3;
+      font-size: 14px;
+      position: relative;
+
+      &:first-of-type {
+        padding-right: 20px;
+        cursor: pointer;
+
+        &:after {
+          content: '>';
           display: inline-block;
-          vertical-align: top;
-          cursor: pointer;
-
-          img {
-            display: inline-block;
-            vertical-align: top;
-            width: auto;
-            height: 30px;
-            border-radius: 50%;
-            border: 1px solid #222;
-          }
-
-          span {
-            line-height: 30px;
-            display: inline-block;
-            vertical-align: top;
-            padding-left: 10px;
-          }
+          width: 10px;
+          position: absolute;
+          top: 50%;
+          @include transform(translateY(-50%));
+          right: 5px;
+          font-weight: 700;
         }
       }
-
-      .logo {
-        display: inline-block;
-        vertical-align: top;
-        width: 50px;
-        height: 50px;
-        overflow: hidden;
-
-        img {
-          display: block;
-          width: 100%;
-        }
-      }
+    }
   }
 }

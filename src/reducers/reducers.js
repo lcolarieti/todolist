@@ -1,7 +1,5 @@
 import {
-  ADD_TODO,
-  TOGGLE_TODO,
-  SET_VISIBILITY_FILTER,
+  TOGGLE_COMPLETED,
   GETLIST_REQUESTED,
   GETLIST_RECEIVED,
   GETLIST_FAILED,
@@ -10,28 +8,29 @@ import {
   RMVLIST_ITEM_RECEIVED,
   EDIT_MODE,
   EDITLIST_ITEM_RECEIVED,
-  VisibilityFilters
+  SET_TODO_LIST,
+  GOTO_ROOT,
+  SETTODO_ITEM_RECEIVED,
+  EDIT_MODE_TODO,
+  EDITTODO_ITEM_RECEIVED,
+  RMVTODO_ITEM_RECEIVED,
+  SHOW_ALL,
+  FILTER_CHANGED
 } from '../actions/actions';
-const { SHOW_ALL } = VisibilityFilters;
+import utils from '../utils/utils';
+
 
 const initialState = {
   todosList: [],
-  todos: [],
-  filter: SHOW_ALL,
-  fetching: false
+  todosListId: null,
+  fetching: false,
+  todosView: false,
+  filter: SHOW_ALL
 };
 
 function rootReducer(state = initialState, action) {
 
   switch (action.type) {
-    case ADD_TODO:
-      addTodo(state, action);
-      break;
-    case TOGGLE_TODO:
-      toggleTodo(state, action);
-      break;
-    case SET_VISIBILITY_FILTER:
-      return Object.assign({}, state, {filter: action.filter});
     case GETLIST_REQUESTED:
     case GETLIST_RECEIVED:
     case GETLIST_FAILED:
@@ -44,36 +43,50 @@ function rootReducer(state = initialState, action) {
       return removeListItem(state, action);
     case EDIT_MODE:
       return editMode(state, action);
+    case EDIT_MODE_TODO:
+      return editModeTodo(state, action);
     case EDITLIST_ITEM_RECEIVED:
+    case EDITTODO_ITEM_RECEIVED:
+    case TOGGLE_COMPLETED:
       return editListItem(state, action);
+    case SET_TODO_LIST:
+      return setTodoList(state, action);
+    case GOTO_ROOT:
+      return resetRootState(state)
+    case SETTODO_ITEM_RECEIVED:
+      return setNewTodoItem(state, action);
+    case RMVTODO_ITEM_RECEIVED:
+      return removeTodoItem(state, action);
+    case FILTER_CHANGED:
+      return Object.assign({}, state, {filter: action.filter});
     default:
       return state;
   }
 
 }
 
-const addTodo = (state, action) => {
-  return Object.assign({}, state, {
-    todos: action.todo
-  });
-};
-
-const toggleTodo = (state, action) => {
-  state.todos.map((todo, i) => {
-    if (action.todoId === todo.id) return Object.assign({}, todo, {
-      completed: !todo.completed
-    });
-    return true;
-  });
-  return state.todos;
-};
 
 const setNewListItem = (state, action) => {
   return Object.assign({}, state, {todosList: state.todosList.concat([action.newItem])});
 };
 
 const removeListItem = (state, action) => {
-  return Object.assign({}, state, {todosList: state.todosList.filter((item) => {return item._id !== action.removedItemId})});
+  return Object.assign({}, state, {
+      todosList: state.todosList.filter((item) => {return item._id !== action.removedItemId})
+    }
+  );
+};
+
+const removeTodoItem = (state, action) => {
+  return Object.assign({}, state, {
+      todosList: state.todosList.map((item) => {
+        if (item._id === state.todosListId) {
+          item = action.todosListItem;
+        }
+        return item;
+      })
+    }
+  );
 };
 
 const editMode = (state, action) => {
@@ -83,10 +96,40 @@ const editMode = (state, action) => {
   })});
 };
 
+const editModeTodo = (state, action) => {
+  let todos = utils.getTodosByListId(state.todosList, state.todosListId).map((todo) => {
+    if (todo._id === action.itemId) return Object.assign(todo, {editMode: (!todo.hasOwnProperty('editMode') ? true : !todo.editMode)});
+    return todo;
+  });
+  return Object.assign({}, state, {todosList: state.todosList.map((item) => {
+    if (item._id === state.todosListId) return Object.assign(item, {todos: todos});
+    return item;
+  })});
+};
+
 const editListItem = (state, action) => {
   return Object.assign({}, state, {todosList: state.todosList.map((item) => {
-    return (item._id === action.editedItem._id ? action.editedItem : item);
+    if (item._id === action.editedItem._id)
+      return Object.assign(action.editedItem, {todos: action.editedItem.todos});
+    else
+      return item;
   })});
+};
+
+const setTodoList = (state, action) => {
+  return Object.assign({}, state, {todosListId: action.todosListId, todosView: true});
+}
+
+const resetRootState = (state) => {
+  return Object.assign({}, state, {todosListId: null, todosView: false});
+}
+
+const setNewTodoItem = (state, action) => {
+  let updatedTodosList = state.todosList.map((item) => {
+    if (item._id === action.newItem._id) item = action.newItem;
+    return item;
+  });
+  return Object.assign({}, state, {todosList: updatedTodosList});
 };
 
 export default rootReducer;

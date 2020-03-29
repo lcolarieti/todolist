@@ -1,19 +1,32 @@
+@import 'styles/variables';
+
 html,
 body,
 #root {
+  position: relative;
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100%;
   -webkit-font-smoothing: antialiased;
   font-family: 'Open Sans', sans-serif;
-  color: #222;
+  color: $color4;
+  background-color: $color1;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 14px;
+  }
 }
 
 body {
 
   &.no-overflow {
     overflow: hidden;
+  }
+
+  .wrap {
+    max-width: 1240px;
+    margin: 0 auto;
   }
 }
 
@@ -25,7 +38,19 @@ body {
     }
 }
 
+.background-icon {
+  color: $color3;
+  font-size: 85vh;
+  opacity: 0.08;
+  position: fixed;
+  bottom: 30px;
+  right: -5vh;
+  z-index: 0;
+}
+
 @import 'styles/fonts';
 @import 'styles/mixin';
 @import 'styles/loading';
 @import 'styles/header';
+@import 'styles/footer';
+@import 'styles/listItem';

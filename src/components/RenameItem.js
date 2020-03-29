@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {editModeAction} from '../actions/actions';
+import {editModeAction, editModeTodoAction} from '../actions/actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons'
 
 
+const mapStateToProps = state => {
+  return {
+    todosView: state.todosView
+  };
+};
+
 function mapDispatchToProps(dispatch) {
   return {
-    editMode: itemId => dispatch(editModeAction(itemId))
+    editMode: itemId => dispatch(editModeAction(itemId)),
+    editModeTodo: itemId => dispatch(editModeTodoAction(itemId))
   };
 }
 
@@ -20,7 +27,7 @@ class RenameItemIcon extends Component {
   }
 
   handleClick() {
-    this.props.editMode(this.props.itemId)
+    !this.props.todosView ? this.props.editMode(this.props.itemId) : this.props.editModeTodo(this.props.itemId);
   }
 
   render() {
@@ -32,4 +39,4 @@ class RenameItemIcon extends Component {
   }
 }
 
-export default connect(null, mapDispatchToProps)(RenameItemIcon);
+export default connect(mapStateToProps, mapDispatchToProps)(RenameItemIcon);

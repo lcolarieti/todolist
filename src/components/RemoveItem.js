@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {removeListItemAction} from '../actions/actions';
+import {removeListItemAction, removeTodoItemAction} from '../actions/actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
 
+const mapStateToProps = state => {
+
+  return {
+    todosView: state.todosView
+  };
+};
 
 function mapDispatchToProps(dispatch) {
   return {
-    removeListItem: itemId => dispatch(removeListItemAction(itemId))
+    removeListItem: itemId => dispatch(removeListItemAction(itemId)),
+    removeTodoItem: itemId => dispatch(removeTodoItemAction(itemId))
   };
 }
 
@@ -20,7 +27,7 @@ class RemoveItem extends Component {
   }
 
   handleClick() {
-    this.props.removeListItem(this.props.itemId);
+    !this.props.todosView ? this.props.removeListItem(this.props.itemId) : this.props.removeTodoItem(this.props.itemId);
   }
 
   render() {
@@ -32,4 +39,4 @@ class RemoveItem extends Component {
   }
 }
 
-export default connect(null, mapDispatchToProps)(RemoveItem);
+export default connect(mapStateToProps, mapDispatchToProps)(RemoveItem);

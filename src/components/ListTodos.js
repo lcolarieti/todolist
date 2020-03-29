@@ -1,36 +1,27 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {getListAction, setTodoListAction} from '../actions/actions';
 import AddItem from './AddListItemForm';
 import RemoveItem from './RemoveItem';
 import RenameItemIcon from './RenameItem';
 import RenameItemInput from './RenameItemInput';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBullseye } from '@fortawesome/free-solid-svg-icons'
+import Checkbox from './Checkbox';
+import Filters from './Filters';
+import utils from '../utils/utils';
 
 const mapStateToProps = state => {
   return {
-    todosList: state.todosList
+    todosList: state.todosList,
+    todosListId: state.todosListId,
+    filter: state.filter
   };
 };
 
-function mapDispatchToProps(dispatch) {
-  return {
-    getList: () => dispatch(getListAction()),
-    setTodoList: (itemId) => dispatch(setTodoListAction(itemId))
-  };
-}
-
-class List extends Component {
+class ListTodos extends Component {
 
   constructor(props) {
     super(props);
 
-    this.handleClickOnItem = this.handleClickOnItem.bind(this);
-  }
-
-  componentDidMount() {
-    this.props.getList();
+    this.todos = utils.getTodosByListId(this.props.todosList, this.props.todosListId, this.props.filter);
   }
 
   dateFormatter(date) {
@@ -38,20 +29,23 @@ class List extends Component {
     return new Date(date).toLocaleDateString('it-IT', options);
   }
 
-  handleClickOnItem(itemId) {
-    this.props.setTodoList(itemId);
+  componentDidUpdate(prevProps) {
+    if (utils.getTodosByListId(prevProps.todosList, prevProps.todosListId) !== utils.getTodosByListId(this.props.todosList, this.props.todosListId) || (prevProps.filter !== this.props.filter)) {
+      this.todos = utils.getTodosByListId(this.props.todosList, this.props.todosListId, this.props.filter);
+      this.forceUpdate();
+    }
   }
 
   createListItem() {
-    let itemList = this.props.todosList.map((item, i) => {
+    let itemList = this.todos.map((item, i) => {
       let editMode = (item.hasOwnProperty('editMode') ? item.editMode : false);
 
       if (!editMode)
         return (
           <li key={item._id} id={item._id}>
             <div className="item-wrap">
-              <FontAwesomeIcon icon={faBullseye} />
-              <div className="span-wrap"  onClick={() => this.handleClickOnItem(item._id)}>
+              <Checkbox item={item} />
+              <div className="span-wrap">
                 <span className="item-name" title={item.name}>{item.name}</span>
                 <span className="item-date">({this.dateFormatter(item.updatedAt)})</span>
               </div>
@@ -79,12 +73,12 @@ class List extends Component {
 
   render() {
     return (
-      <div className="list-wrap wrap">
+      <div className="list-wrap todos wrap">
+        <Filters />
         {this.createListItem()}
       </div>
     );
   }
-
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(List);
+export default connect(mapStateToProps, null)(ListTodos);
